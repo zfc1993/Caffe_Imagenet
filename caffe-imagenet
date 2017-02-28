@@ -1,0 +1,35 @@
+Imagenet:
+references：Krizhevsky et al. for ImageNet 这篇文章看一下~ 
+
+参考实例：
+http://blog.csdn.net/u011244794/article/details/51565786
+
+
+用imagenet+自己的数据训练自己的模型:
+（在NVIDA Testla K20上训练一次需要近两周的时间 。。。有机会再自己训练一下吧 。。。）
+步骤：
+官方文档：http://caffe.berkeleyvision.org/gathered/examples/imagenet.html
+1、下载imagenet ILSVRC2012数据集 http://www.cnblogs.com/zjutzz/p/6083201.html
+2、把图片大小统一resize为256×256 使用mapreduce？？？
+3、打开examples/imagenet/create_imagenet.sh 把训练集和验证集路径修改为自己的数据集的路径 
+如果还没做数据集的resize 则把RESIZE=true 
+然后就可以通过运行该.sh文件创建leveldbs  leveldbs是指这个类型的数据集？？？
+会产生examples/imagenet/ilsvrc12_train_leveldb and examples/imagenet/ilsvrc12_val_leveldb  两个数据集文件 
+4、model要求我们把每张图片都减去均值image mean （为啥？？？）所以要先使用mean.tools/comput_image_mean.cpp来实现图片减去均值 
+直接运行：./examples/imagenet/make_imagenet_mean.sh 会产生 data/ilsvrc12/imagenet_mean.binaryproto
+5、训练imagenet
+./build/tools/caffe train --solver=modles/bvlc_reference_caffenet/solver.prototxt
+定义网络结构 caffe_net.prototxt 以及 优化 solver.prototxt 
+这里使用人家写好的solver.prototxt 里面说明了使用的网络结构 
+6、后期通过修改网络结构 或者 finetune 调整solver里面的参数 以适应其他的任务和数据集 
+
+用训练好的imagenet model使用python接口 进行分类预测 classifying :
+http://nbviewer.jupyter.org/github/BVLC/caffe/blob/master/examples/00-classification.ipynb#2.-Load-net-and-set-up-input-preprocessing 
+
+
+（caffe有在model zoo里提供了很多训练好的模型 caffenet model啊啥的 不想自己训练的话可以直接拿来用～
+需要自己下载么？？？应该是在modles/bvlc_reference_caffenet/文件夹下 可是刚开始没有 
+ !../scripts/download_model_binary.py ../models/bvlc_reference_caffenet  这样下载？？
+是的！官方文档里有说明：Each one of these can be downloaded by running scripts/download_model_binary.py <dirname> where <dirname> is specified below: 。。。
+）
+
